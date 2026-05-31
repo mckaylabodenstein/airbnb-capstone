@@ -1,43 +1,71 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_URL = "https://airbnb-capstone-hn4p.onrender.com/api";
 
-export const getAccommodations = async () => {
-  const response = await axios.get(`${API_BASE_URL}/accommodations`);
-  return response.data;
-};
+const api = axios.create({
+  baseURL: API_URL,
+});
 
-export const getAccommodationById = async (id) => {
-  const response = await axios.get(`${API_BASE_URL}/accommodations/${id}`);
-  return response.data;
-};
+function getToken() {
+  return localStorage.getItem("token");
+}
 
-export const createAccommodation = async (listingData) => {
-  const response = await axios.post(`${API_BASE_URL}/accommodations`, listingData);
-  return response.data;
-};
+function getAuthConfig() {
+  const token = getToken();
 
-export const updateAccommodation = async (id, listingData) => {
-  const response = await axios.put(`${API_BASE_URL}/accommodations/${id}`, listingData);
-  return response.data;
-};
+  return {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  };
+}
 
-export const deleteAccommodation = async (id) => {
-  const response = await axios.delete(`${API_BASE_URL}/accommodations/${id}`);
+export async function getAccommodations() {
+  const response = await api.get("/accommodations");
   return response.data;
-};
+}
 
-export const createReservation = async (reservationData) => {
-  const response = await axios.post(`${API_BASE_URL}/reservations`, reservationData);
+export async function getAccommodationById(id) {
+  const response = await api.get(`/accommodations/${id}`);
   return response.data;
-};
+}
 
-export const getReservations = async () => {
-  const response = await axios.get(`${API_BASE_URL}/reservations`);
+export async function createAccommodation(accommodationData) {
+  const response = await api.post("/accommodations", accommodationData, getAuthConfig());
   return response.data;
-};
+}
 
-export const deleteReservation = async (id) => {
-  const response = await axios.delete(`${API_BASE_URL}/reservations/${id}`);
+export async function updateAccommodation(id, accommodationData) {
+  const response = await api.put(`/accommodations/${id}`, accommodationData, getAuthConfig());
   return response.data;
-};
+}
+
+export async function deleteAccommodation(id) {
+  const response = await api.delete(`/accommodations/${id}`, getAuthConfig());
+  return response.data;
+}
+
+export async function createReservation(reservationData) {
+  const response = await api.post("/reservations", reservationData, getAuthConfig());
+  return response.data;
+}
+
+export async function getReservations() {
+  const response = await api.get("/reservations", getAuthConfig());
+  return response.data;
+}
+
+export async function deleteReservation(id) {
+  const response = await api.delete(`/reservations/${id}`, getAuthConfig());
+  return response.data;
+}
+
+export async function loginUser(loginData) {
+  const response = await api.post("/users/login", loginData);
+  return response.data;
+}
+
+export async function registerUser(registerData) {
+  const response = await api.post("/users/register", registerData);
+  return response.data;
+}
